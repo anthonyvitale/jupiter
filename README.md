@@ -2,8 +2,8 @@
 
 Very much a work in progress...
 
-Jupiter is a collection of software for my skycam project. For now it'll run on a Raspberry Pi and upload photo/video to
-DigitalOcean via their blob storage, Spaces (which uses AWS S3...).
+Jupiter is a collection of software for my skycam project. It will run on a Raspberry Pi and upload photo/video to
+DigitalOcean via their blob storage solution, Spaces.
 
 ## Moneta
 Moneta is the name of the DigitalOcean Spaces bucket and it will hold all photos taken by the skycam as well as any
