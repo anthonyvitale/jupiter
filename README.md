@@ -9,5 +9,11 @@ DigitalOcean via their blob storage solution, Spaces.
 Moneta is the name of the DigitalOcean Spaces bucket and it will hold all photos taken by the skycam as well as any
 timelapse videos created.
 
+## Astraios
+Camera package for telling the RPi to take photos.
+
 ## Minerva
 A database (also on DigitalOcean) to store photo/timelapse metadata.
+
+## Saturn
+Timelapse creation tool
