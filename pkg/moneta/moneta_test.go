@@ -1,7 +1,9 @@
 package moneta
 
 import (
+	"bytes"
 	"context"
+	"io"
 	"testing"
 
 	"github.com/anthonyvitale/jupiter/pkg/moneta/mocks"
@@ -9,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/fortytw2/leaktest"
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
@@ -32,7 +35,9 @@ func (suite *MonetaSuite) SetupTest() {
 	suite.ctrl = gomock.NewController(suite.T())
 	suite.s3Mock = mocks.NewMockS3API(suite.ctrl)
 
-	suite.store = New(suite.s3Mock, suite.bucket)
+	store, err := New(suite.s3Mock, suite.bucket)
+	suite.NoError(err)
+	suite.store = store
 }
 
 func (suite *MonetaSuite) TearDownTest() {
@@ -45,12 +50,91 @@ func TestMonetaSuite(t *testing.T) {
 }
 
 func (suite *MonetaSuite) Test_MonetaPing() {
-	// TODO: TDD here with ping error and no error
-	suite.s3Mock.
-		EXPECT().
-		HeadBucket(suite.ctx, &s3.HeadBucketInput{Bucket: aws.String(suite.bucket)}).
-		Return(nil, nil)
+	type fields struct {
+		s3Mock *mocks.MockS3API
+	}
+	tests := []struct {
+		name    string
+		prepare func(f *fields)
+		wantErr bool
+	}{
+		{
+			name: "ping successful, no error",
+			prepare: func(f *fields) {
+				f.s3Mock.EXPECT().HeadBucket(suite.ctx, &s3.HeadBucketInput{Bucket: aws.String(suite.bucket)}).Return(nil, nil)
+			},
+			wantErr: false,
+		},
+		{
+			name: "ping failure, error",
+			prepare: func(f *fields) {
+				f.s3Mock.EXPECT().HeadBucket(suite.ctx, &s3.HeadBucketInput{Bucket: aws.String(suite.bucket)}).Return(nil, assert.AnError)
+			},
+			wantErr: true,
+		},
+	}
 
-	err := suite.store.Ping(suite.ctx)
-	suite.NoError(err)
+	for _, tt := range tests {
+		f := fields{
+			s3Mock: suite.s3Mock,
+		}
+		if tt.prepare != nil {
+			tt.prepare(&f)
+		}
+
+		err := suite.store.Ping(suite.ctx)
+		if tt.wantErr {
+			suite.Error(err, tt.name)
+		} else {
+			suite.NoError(err, tt.name)
+		}
+	}
+}
+
+func (suite *MonetaSuite) Test_MonetaUploadImage() {
+	type fields struct {
+		s3Mock *mocks.MockS3API
+	}
+	type args struct {
+		key  string
+		body io.Reader
+	}
+	tests := []struct {
+		name    string
+		args    args
+		prepare func(f *fields)
+		wantErr bool
+	}{
+		{
+			name: "uploadImage successful, no error",
+			args: args{
+				key:  "key_1",
+				body: bytes.NewBufferString("my_body"),
+			},
+			prepare: func(f *fields) {
+				f.s3Mock.EXPECT().PutObject(suite.ctx, &s3.PutObjectInput{
+					Bucket: aws.String(suite.bucket),
+					Key:    aws.String("key_1"),
+					Body:   bytes.NewBufferString("my_body"),
+				}).Return(nil, nil)
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		f := fields{
+			s3Mock: suite.s3Mock,
+		}
+		if tt.prepare != nil {
+			tt.prepare(&f)
+		}
+
+		err := suite.store.UploadImage(suite.ctx, tt.args.key, tt.args.body)
+		if tt.wantErr {
+			suite.Error(err, tt.name)
+		} else {
+			suite.NoError(err, tt.name)
+		}
+	}
 }

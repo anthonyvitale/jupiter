@@ -34,11 +34,14 @@ type Store struct {
 }
 
 // New creates a Store.
-func New(client S3API, bucket string) *Store {
+func New(client S3API, bucket string) (*Store, error) {
+	if bucket == "" {
+		return nil, errors.New("bucket name cannot be empty")
+	}
 	return &Store{
 		client: client,
 		bucket: bucket,
-	}
+	}, nil
 }
 
 // Ping checks if a bucket exists. Useful as a health check.
@@ -53,6 +56,9 @@ func (s *Store) Ping(ctx context.Context) error {
 func (s *Store) UploadImage(ctx context.Context, key string, body io.Reader) error {
 	if key == "" {
 		return errors.New("key cannot be empty")
+	}
+	if body == nil {
+		return errors.New("body cannot be nil")
 	}
 
 	_, err := s.client.PutObject(ctx, &s3.PutObjectInput{
