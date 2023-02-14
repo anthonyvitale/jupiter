@@ -49,6 +49,34 @@ func TestMonetaSuite(t *testing.T) {
 	suite.Run(t, new(MonetaSuite))
 }
 
+func (suite *MonetaSuite) Test_MonetaNew() {
+	type args struct {
+		bucket string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "empty string",
+			args: args{
+				bucket: "",
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		store, err := New(suite.s3Mock, tt.args.bucket)
+		if tt.wantErr {
+			suite.Error(err, tt.name)
+		} else {
+			suite.NoError(err, tt.name)
+		}
+		suite.Nil(store)
+	}
+}
+
 func (suite *MonetaSuite) Test_MonetaPing() {
 	type fields struct {
 		s3Mock *mocks.MockS3API
@@ -119,6 +147,39 @@ func (suite *MonetaSuite) Test_MonetaUploadImage() {
 				}).Return(nil, nil)
 			},
 			wantErr: false,
+		},
+		{
+			name: "uploadImage unsuccessful, error",
+			args: args{
+				key:  "key_1",
+				body: bytes.NewBufferString("my_body"),
+			},
+			prepare: func(f *fields) {
+				f.s3Mock.EXPECT().PutObject(suite.ctx, &s3.PutObjectInput{
+					Bucket: aws.String(suite.bucket),
+					Key:    aws.String("key_1"),
+					Body:   bytes.NewBufferString("my_body"),
+				}).Return(nil, assert.AnError)
+			},
+			wantErr: true,
+		},
+		{
+			name: "uploadImage missing key",
+			args: args{
+				key:  "",
+				body: bytes.NewBufferString("my_body"),
+			},
+			prepare: func(f *fields) {},
+			wantErr: true,
+		},
+		{
+			name: "uploadImage missing body",
+			args: args{
+				key:  "key_1",
+				body: nil,
+			},
+			prepare: func(f *fields) {},
+			wantErr: true,
 		},
 	}
 
