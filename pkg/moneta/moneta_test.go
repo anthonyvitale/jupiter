@@ -119,7 +119,7 @@ func (suite *MonetaSuite) Test_MonetaPing() {
 	}
 }
 
-func (suite *MonetaSuite) Test_MonetaUploadImage() {
+func (suite *MonetaSuite) Test_MonetaUpload() {
 	type fields struct {
 		s3Mock *mocks.MockS3API
 	}
@@ -191,7 +191,7 @@ func (suite *MonetaSuite) Test_MonetaUploadImage() {
 			tt.prepare(&f)
 		}
 
-		err := suite.store.UploadImage(suite.ctx, tt.args.key, tt.args.body)
+		err := suite.store.Upload(suite.ctx, tt.args.key, tt.args.body)
 		if tt.wantErr {
 			suite.Error(err, tt.name)
 		} else {

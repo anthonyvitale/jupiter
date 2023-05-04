@@ -7,3 +7,8 @@ import "io"
 type Camera interface {
 	TakePhoto() (io.Reader, error)
 }
+
+// ShellCamera provides a way to take a picture via the shell.
+type ShellCamera interface {
+	ExecuteCommand() error
+}
