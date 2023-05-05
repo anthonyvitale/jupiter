@@ -31,3 +31,4 @@ clean:
 	find "${BASEDIR}" -name "*.auto.go" -print | xargs rm -f
 	go clean
 	rm -f "${BASEDIR}/coverage.out"
+	rm -rf "${WORKDIR}"

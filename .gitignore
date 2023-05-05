@@ -1,5 +1,6 @@
 **.auto.go
 coverage.out
+.work
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,vim,linux,go,zsh
