@@ -52,7 +52,7 @@ func (s *Store) Ping(ctx context.Context) error {
 	return err
 }
 
-// UploadImage uploads an image to the backing blob storage.
+// UploadImage uploads an object to the backing blob storage.
 func (s *Store) UploadImage(ctx context.Context, key string, body io.Reader) error {
 	if key == "" {
 		return errors.New("key cannot be empty")
