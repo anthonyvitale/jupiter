@@ -73,7 +73,7 @@ func main() {
 
 	filePath := fmt.Sprintf("%s.jpeg", filepath.Join(localDir, imgPath, now.Format("150405Z")))
 	log.Printf("taking img, saving to %s", filePath)
-	cmd := exec.Command("libcamera-jpeg", "-o", filePath)
+	cmd := exec.Command("libcamera-still", "--shutter", "5000000", "--gain", "1", "--awbgains", "2.2,2.3", "--immediate", "-o", filePath)
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		log.Fatal(err)
