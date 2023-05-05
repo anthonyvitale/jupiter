@@ -5,17 +5,18 @@ WORKDIR ?= $(PWD)/.work
 .PHONY: all
 all: auto test build
 
-.PHONY: auto
-auto:
-	go generate -x ./...
-
 .PHONY: build
-build: auto
+build:
 	go build -o $(WORKDIR)/jupiter cmd/cli/main.go
+	GOOS=linux GOARCH=arm64 go build -o ${WORKDIR}/jupiter_arm64 cmd/cli/main.go
 
 .PHONY: run
 run: build
 	./.work/jupiter
+
+.PHONY: auto
+auto:
+	go generate -x ./...
 
 .PHONY: test
 test: auto

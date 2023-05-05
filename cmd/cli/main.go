@@ -4,8 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+	"time"
 
 	"github.com/anthonyvitale/jupiter/pkg/moneta"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -15,8 +20,6 @@ import (
 )
 
 func main() {
-	log.Println("hello there")
-
 	customResolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
 		return aws.Endpoint{
 			PartitionID:   "aws",
@@ -37,25 +40,63 @@ func main() {
 		}),
 	)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	spacesClient := s3.NewFromConfig(cfg)
 
 	store, err := moneta.New(spacesClient, "moneta")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	err = store.Ping(context.TODO())
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	log.Println("trying to upload file")
-	err = store.Upload(context.TODO(), "2023/my_file.txt", bytes.NewBufferString("hello there"))
+	// Create directory to save picture to
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
+	now := time.Now().UTC()
+	localDir := filepath.Join(homeDir, "skycam", "images")
+
+	imgPath := now.Format("2006/01/02")
+
+	err = os.MkdirAll(filepath.Join(localDir, imgPath), os.ModePerm)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	filePath := fmt.Sprintf("%s.jpeg", filepath.Join(localDir, imgPath, now.Format("150405Z")))
+	log.Printf("taking img, saving to %s", filePath)
+	cmd := exec.Command("libcamera-jpeg", "-o", filePath)
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := cmd.Start(); err != nil {
+		log.Fatal(err)
+	}
+
+	slurp, _ := io.ReadAll(stderr)
+	fmt.Printf("%s\n", slurp)
+
+	if err := cmd.Wait(); err != nil {
+		log.Fatal(err)
+	}
+
+	img, err := os.ReadFile(filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = store.UploadImage(context.TODO(), strings.TrimPrefix(filePath, fmt.Sprintf("%s/", localDir)), bytes.NewBuffer(img))
+	if err != nil {
+		log.Fatal(err)
+	}
 }
