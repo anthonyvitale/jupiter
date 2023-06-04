@@ -22,11 +22,8 @@ import (
 func main() {
 	customResolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
 		return aws.Endpoint{
-			PartitionID:   "aws",
-			URL:           "https://nyc3.digitaloceanspaces.com",
-			SigningRegion: "us-east-2",
+			URL: os.Getenv("S3_ENDPOINT"),
 		}, nil
-		return aws.Endpoint{}, fmt.Errorf("unknown endpoint requested")
 	})
 
 	cfg, err := config.LoadDefaultConfig(
@@ -34,8 +31,8 @@ func main() {
 		config.WithEndpointResolverWithOptions(customResolver),
 		config.WithCredentialsProvider(credentials.StaticCredentialsProvider{
 			Value: aws.Credentials{
-				AccessKeyID:     os.Getenv("SPACES_KEY"),
-				SecretAccessKey: os.Getenv("SPACES_SECRET"),
+				AccessKeyID:     os.Getenv("S3_KEY"),
+				SecretAccessKey: os.Getenv("S3_SECRET"),
 			},
 		}),
 	)
@@ -43,9 +40,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	spacesClient := s3.NewFromConfig(cfg)
+	s3Client := s3.NewFromConfig(cfg, func(o *s3.Options) {
+		o.UsePathStyle = true
+	})
 
-	store, err := moneta.New(spacesClient, "moneta")
+	store, err := moneta.New(s3Client, "moneta")
 	if err != nil {
 		log.Fatal(err)
 	}

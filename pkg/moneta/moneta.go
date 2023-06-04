@@ -9,6 +9,7 @@ import (
 	"io"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	signerv4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
@@ -65,7 +66,9 @@ func (s *Store) UploadImage(ctx context.Context, key string, body io.Reader) err
 		Bucket: aws.String(s.bucket),
 		Key:    aws.String(key),
 		Body:   body,
-	})
+	}, s3.WithAPIOptions(
+		signerv4.SwapComputePayloadSHA256ForUnsignedPayloadMiddleware,
+	))
 
 	return err
 }
