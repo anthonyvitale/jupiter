@@ -33,3 +33,4 @@ clean:
 	go clean
 	rm -f "${BASEDIR}/coverage.out"
 	rm -rf "${WORKDIR}"
+	rm -rf dist

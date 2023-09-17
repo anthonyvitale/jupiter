@@ -1,6 +1,7 @@
 **.auto.go
 coverage.out
 .work
+dist
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,vim,linux,go,zsh
@@ -128,3 +129,5 @@ zsdoc/data
 !/tests/_output/.gitkeep
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,vim,linux,go,zsh
+
+dist/
