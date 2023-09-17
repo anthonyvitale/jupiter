@@ -17,12 +17,12 @@ jobs:
         with:
           fetch-depth: 0
       - run: git fetch --force --tags
-      - name: Install mockgen
-        run: |
-          go install github.com/golang/mock/mockgen
       - uses: actions/setup-go@v4
         with:
           go-version: stable
+      - name: Install mockgen
+        run: |
+          go install github.com/golang/mock/mockgen
       - uses: goreleaser/goreleaser-action@v5
         with:
           distribution: goreleaser
