@@ -1,9 +1,15 @@
 BASEDIR ?= ${PWD}
 WORKDIR ?= $(PWD)/.work
+HESTIA ?= ${BASEDIR}/hestia
 
 
 .PHONY: all
 all: auto test build
+
+.PHONY: verbump
+verbump:
+	@APP_ROOT=${BASEDIR} ${HESTIA}/bin/auto_version
+
 
 .PHONY: build
 build:
