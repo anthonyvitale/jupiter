@@ -140,11 +140,15 @@ func (suite *MonetaSuite) Test_MonetaUploadImage() {
 				body: bytes.NewBufferString("my_body"),
 			},
 			prepare: func(f *fields) {
-				f.s3Mock.EXPECT().PutObject(suite.ctx, &s3.PutObjectInput{
-					Bucket: aws.String(suite.bucket),
-					Key:    aws.String("key_1"),
-					Body:   bytes.NewBufferString("my_body"),
-				}).Return(nil, nil)
+				f.s3Mock.EXPECT().PutObject(
+					suite.ctx,
+					&s3.PutObjectInput{
+						Bucket: aws.String(suite.bucket),
+						Key:    aws.String("key_1"),
+						Body:   bytes.NewBufferString("my_body"),
+					},
+					gomock.Any(),
+				).Return(nil, nil)
 			},
 			wantErr: false,
 		},
@@ -155,11 +159,15 @@ func (suite *MonetaSuite) Test_MonetaUploadImage() {
 				body: bytes.NewBufferString("my_body"),
 			},
 			prepare: func(f *fields) {
-				f.s3Mock.EXPECT().PutObject(suite.ctx, &s3.PutObjectInput{
-					Bucket: aws.String(suite.bucket),
-					Key:    aws.String("key_1"),
-					Body:   bytes.NewBufferString("my_body"),
-				}).Return(nil, assert.AnError)
+				f.s3Mock.EXPECT().PutObject(
+					suite.ctx,
+					&s3.PutObjectInput{
+						Bucket: aws.String(suite.bucket),
+						Key:    aws.String("key_1"),
+						Body:   bytes.NewBufferString("my_body"),
+					},
+					gomock.Any(),
+				).Return(nil, assert.AnError)
 			},
 			wantErr: true,
 		},
