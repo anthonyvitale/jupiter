@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -euo pipefail
+
+BIN_DIR=$(dirname $(readlink -f $0))
+
+source $BIN_DIR/common
+
+VERSION_FILE="${APP_ROOT}/VERSION"
+
+if [ ! -f $VERSION_FILE ]; then
+    echo "major=0" >> $VERSION_FILE 
+    echo "minor=0" >> $VERSION_FILE 
+    echo "patch=0" >> $VERSION_FILE 
+fi
+
+readarray -t versions < $VERSION_FILE
+
+new_patch=0
+# check array length, ensure it's 3 -- quite simple atm, we're assuming 'patch' will always be third
+if [ ${#versions[@]} -eq 3 ]; then
+    patch_line="${versions[2]}"
+    patch=$(printf %s "$patch_line" | awk -F= '{printf("%d",$2)}')
+    new_patch=$(($patch + 1))
+fi
+
+versions[2]="patch=$new_patch"
+
+printf "%s\n" "${versions[@]}" > $VERSION_FILE
+
+source $BIN_DIR/version

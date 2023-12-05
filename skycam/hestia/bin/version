@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -euo pipefail
+
+BIN_DIR=$(dirname $(readlink -f $0))
+
+source $BIN_DIR/common
+
+VERSION_FILE="${APP_ROOT}/VERSION"
+
+if [ -f $VERSION_FILE ]; then
+    versions=()
+    while IFS= read -r line
+    do
+        versions+=($(printf %s "$line" | awk -F= '{printf("%d",$2)}'))
+    done < $VERSION_FILE
+    
+    IFS="."
+    echo "v${versions[*]}"
+fi
