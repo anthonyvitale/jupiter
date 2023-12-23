@@ -10,8 +10,8 @@ version: 1
 
 before:
   hooks:
+    - make clean auto
     - go mod tidy
-    - make auto
 
 builds:
   - env:
