@@ -1,5 +1,5 @@
-# .github/workflows/build.yml
-name: build
+# .github/workflows/skycam-build.yml
+name: skycam-build
 
 on:
   push:
@@ -12,6 +12,9 @@ permissions:
 
 jobs:
   build:
+    defaults:
+      run:
+        working-directory: skycam
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

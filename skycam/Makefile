@@ -13,8 +13,8 @@ verbump:
 
 .PHONY: build
 build:
-	go build -o $(WORKDIR)/jupiter cmd/cli/main.go
-	GOOS=linux GOARCH=arm64 go build -o ${WORKDIR}/jupiter_arm64 cmd/cli/main.go
+	go build -o $(WORKDIR)/jupiter cmd/jupiter/main.go
+	GOOS=linux GOARCH=arm64 go build -o ${WORKDIR}/jupiter_arm64 cmd/jupiter/main.go
 
 .PHONY: run
 run: build

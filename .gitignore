@@ -1,7 +1,6 @@
 **.auto.go
 coverage.out
 .work
-dist
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,vim,linux,go,zsh,rust
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,vim,linux,go,zsh,rust
