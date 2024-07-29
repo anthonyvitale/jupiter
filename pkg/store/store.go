@@ -1,7 +1,7 @@
-//go:generate mockgen -destination=mocks/mock_moneta.auto.go -package mocks github.com/anthonyvitale/jupiter/pkg/moneta S3API
+//go:generate mockgen -destination=mocks/mock_store.auto.go -package mocks github.com/anthonyvitale/jupiter/pkg/store S3API
 
-// Package moneta provides S3-like operations for storing files in a backing storage system.
-package moneta
+// Package store provides S3-like operations for storing files in a backing storage system.
+package store
 
 import (
 	"context"
@@ -19,8 +19,8 @@ type S3API interface {
 	PutObject(ctx context.Context, params *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error)
 }
 
-// Moneta describes the S3-like interface.
-type Moneta interface {
+// S3Store describes the S3-like interface.
+type S3Store interface {
 	// Ping is used to check connection health
 	Ping(ctx context.Context) error
 	// UploadImage uploads the given content to the provided path. It returns an error indicating whether or not the
@@ -28,7 +28,7 @@ type Moneta interface {
 	UploadImage(ctx context.Context, path string, body io.Reader) error
 }
 
-// Store implements the Moneta interface and is the way to interface with an S3-like product.
+// Store implements the S3Store interface and is the way to interface with an S3-like product.
 type Store struct {
 	client S3API
 	bucket string

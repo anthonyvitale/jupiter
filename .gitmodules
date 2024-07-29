@@ -1,4 +1,0 @@
-[submodule "hestia"]
-	path = hestia
-	url = git@github.com:anthonyvitale/hestia.git
-    branch = main

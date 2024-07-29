@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/anthonyvitale/jupiter/pkg/moneta"
+	"github.com/anthonyvitale/jupiter/pkg/store"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
@@ -44,7 +44,7 @@ func main() {
 		o.UsePathStyle = true
 	})
 
-	store, err := moneta.New(s3Client, "moneta")
+	store, err := store.New(s3Client, "moneta")
 	if err != nil {
 		log.Fatal(err)
 	}

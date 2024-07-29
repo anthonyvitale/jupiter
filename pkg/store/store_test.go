@@ -1,4 +1,4 @@
-package moneta
+package store
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/anthonyvitale/jupiter/pkg/moneta/mocks"
+	"github.com/anthonyvitale/jupiter/pkg/store/mocks"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/fortytw2/leaktest"
@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type MonetaSuite struct {
+type StoreSuite struct {
 	suite.Suite
 	*require.Assertions
 	ctx  context.Context
@@ -27,7 +27,7 @@ type MonetaSuite struct {
 	bucket string
 }
 
-func (suite *MonetaSuite) SetupTest() {
+func (suite *StoreSuite) SetupTest() {
 	suite.Assertions = suite.Suite.Require()
 	suite.ctx = context.Background()
 	suite.bucket = "test_bucket"
@@ -40,16 +40,16 @@ func (suite *MonetaSuite) SetupTest() {
 	suite.store = store
 }
 
-func (suite *MonetaSuite) TearDownTest() {
+func (suite *StoreSuite) TearDownTest() {
 	suite.ctrl.Finish()
 }
 
-func TestMonetaSuite(t *testing.T) {
+func TestStoreSuite(t *testing.T) {
 	defer leaktest.Check(t)
-	suite.Run(t, new(MonetaSuite))
+	suite.Run(t, new(StoreSuite))
 }
 
-func (suite *MonetaSuite) Test_MonetaNew() {
+func (suite *StoreSuite) Test_StoreNew() {
 	type args struct {
 		bucket string
 	}
@@ -77,7 +77,7 @@ func (suite *MonetaSuite) Test_MonetaNew() {
 	}
 }
 
-func (suite *MonetaSuite) Test_MonetaPing() {
+func (suite *StoreSuite) Test_StorePing() {
 	type fields struct {
 		s3Mock *mocks.MockS3API
 	}
@@ -119,7 +119,7 @@ func (suite *MonetaSuite) Test_MonetaPing() {
 	}
 }
 
-func (suite *MonetaSuite) Test_MonetaUploadImage() {
+func (suite *StoreSuite) Test_StoreUploadImage() {
 	type fields struct {
 		s3Mock *mocks.MockS3API
 	}
