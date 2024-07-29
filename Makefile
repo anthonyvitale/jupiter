@@ -15,10 +15,15 @@ verbump:
 build:
 	go build -o $(WORKDIR)/jupiter cmd/cli/main.go
 	GOOS=linux GOARCH=arm64 go build -o ${WORKDIR}/jupiter_arm64 cmd/cli/main.go
+	GOOS=linux GOARCH=amd64 go build -o ${WORKDIR}/jupiter cmd/cli/main.go
 
 .PHONY: run
 run: build
 	./.work/jupiter
+
+.PHONY: tidy
+tidy: auto
+	go mod tidy
 
 .PHONY: auto
 auto:
