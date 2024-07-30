@@ -1,4 +1,4 @@
-//go:generate mockgen -destination=mocks/mock_store.auto.go -package mocks github.com/anthonyvitale/jupiter/pkg/store S3API
+//go:generate mockgen-v0.4.0 -destination=mocks/mock_store.auto.go -package mocks github.com/anthonyvitale/jupiter/pkg/store S3API
 
 // Package store provides S3-like operations for storing files in a backing storage system.
 package store
