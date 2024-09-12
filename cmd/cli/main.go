@@ -10,8 +10,9 @@ import (
 	"strings"
 
 	"github.com/anthonyvitale/jupiter/pkg/camera"
-	"github.com/anthonyvitale/jupiter/pkg/store"
+	"github.com/anthonyvitale/moneta"
 	"github.com/aws/aws-sdk-go-v2/aws"
+	signerv4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -42,7 +43,7 @@ func main() {
 		o.UsePathStyle = true
 	})
 
-	store, err := store.New(s3Client, "moneta")
+	store, err := moneta.New(s3Client, "moneta", signerv4.SwapComputePayloadSHA256ForUnsignedPayloadMiddleware)
 	if err != nil {
 		log.Fatal(err)
 	}
